@@ -46,6 +46,8 @@
   .dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
   .titlebar .path{margin-left:10px; color:var(--muted); font-size:13px}
   .titlebar .path b{color:var(--green); font-weight:500}
+  .winlabel{margin-left:auto; color:var(--muted); font-size:13px; letter-spacing:1px; white-space:nowrap}
+  @media (max-width:460px){.winlabel{display:none}}
   .body{padding:26px 24px 28px}
 
   h1{font-family:var(--crt); font-size:54px; line-height:.9; margin:0 0 2px;
@@ -56,7 +58,7 @@
   .sub{color:var(--muted); font-size:14px; margin:0 0 24px}
   .sub b{color:var(--cyan); font-weight:500}
   .zero{color:var(--red); text-shadow:0 0 16px rgba(255,107,94,.55)}
-  .by{font-family:var(--mono); font-size:13px; color:var(--muted); margin:0 0 22px; letter-spacing:1px}
+  .tagline{font-family:var(--mono); font-size:13px; color:var(--red); margin:0 0 22px; letter-spacing:1px}
 
   .tabs{display:flex; gap:2px; margin:0 0 22px; border-bottom:1px solid var(--border)}
   .tab{font-family:var(--mono); font-size:14px; padding:10px 18px; cursor:pointer; background:transparent;
@@ -91,6 +93,7 @@
   .cell.u.on{color:var(--green); border-color:var(--green); text-shadow:0 0 12px rgba(39,255,158,.6)}
   .cell.g.on{color:var(--cyan); border-color:var(--cyan); text-shadow:0 0 12px rgba(92,214,255,.6)}
   .cell.o.on{color:var(--amber); border-color:var(--amber); text-shadow:0 0 12px rgba(255,183,74,.6)}
+  .grid.locked .cell{opacity:.5; cursor:not-allowed}
   .digit{font-size:20px; font-weight:700; text-align:center; color:var(--muted)}
 
   .readout{display:flex; align-items:baseline; justify-content:space-between;
@@ -109,14 +112,19 @@
   .crow .ds b{color:var(--text); font-weight:500}
   @media (max-width:560px){.crow{grid-template-columns:50px 1fr; row-gap:4px}.crow .ds{grid-column:1 / -1}}
 
-  .rail{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px}
-  .srt{font-family:var(--mono); font-size:12px; padding:7px 11px; border-radius:6px; cursor:pointer;
-       background:transparent; color:var(--muted); border:1px solid var(--border); transition:.15s; white-space:nowrap}
-  .srt:hover{border-color:var(--border-hi); color:var(--text)}
-  .srt.cur{background:rgba(39,255,158,.12); color:var(--green); border-color:var(--green)}
-  .srt.done{color:var(--text); border-color:var(--border-hi)}
-  .srt.lock{color:var(--dim); cursor:not-allowed; border-style:dashed}
-  .srt.lock:hover{border-color:var(--border); color:var(--dim)}
+  .levels{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin:0 0 18px}
+  .level{font-family:var(--mono); text-align:left; cursor:pointer; display:grid; gap:2px; padding:11px 13px;
+         background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:8px; transition:.15s}
+  .level:hover{border-color:var(--border-hi)}
+  .level .lbadge{font-family:var(--crt); font-size:22px; line-height:1; color:var(--muted)}
+  .level .lname{font-size:14px; font-weight:500}
+  .level .ldesc{font-size:11.5px; color:var(--muted); line-height:1.4}
+  .level .lstat{font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--dim); margin-top:3px}
+  .level.cur{border-color:var(--green); background:rgba(39,255,158,.08)}
+  .level.cur .lbadge,.level.cur .lstat{color:var(--green)}
+  .level.done .lbadge{color:var(--green)}
+  .level.lock{cursor:not-allowed; opacity:.45; border-style:dashed}
+  .level.lock:hover{border-color:var(--border)}
 
   .banner{margin:0 0 16px; padding:11px 14px; border:1px solid var(--green); border-radius:6px;
           background:rgba(39,255,158,.08); color:var(--green); font-size:14px}
@@ -163,6 +171,56 @@
     border-left:2px solid var(--cyan); border-radius:6px; padding:10px 13px; margin:2px 0 16px}
   .ref b{color:var(--cyan); font-weight:500}
 
+  .decex{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px}
+  .declabel{font-size:12px; color:var(--muted); margin:16px 0 9px; letter-spacing:.3px}
+  .dim{opacity:.32}
+  .dxraw{font-family:var(--mono); font-size:26px; font-weight:700; letter-spacing:3px; text-align:center; margin:4px 0 18px}
+  .dxrow{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+  .dxcard{display:flex; flex-direction:column; align-items:center; gap:9px; padding:12px 12px 10px; border:1px solid var(--border); border-radius:10px; background:var(--panel); cursor:pointer; transition:.18s; min-width:98px}
+  .dxcard:hover{border-color:var(--border-hi)}
+  .dxcard.focus.t{border-color:var(--muted)}
+  .dxcard.focus.u{border-color:var(--green); box-shadow:0 0 0 1px var(--green) inset}
+  .dxcard.focus.g{border-color:var(--cyan); box-shadow:0 0 0 1px var(--cyan) inset}
+  .dxcard.focus.o{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber) inset}
+  .dxbits{display:flex; gap:5px}
+  .dxbit{font-family:var(--mono); font-size:16px; font-weight:700; width:28px; height:34px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--dim); cursor:pointer; transition:.12s}
+  .dxbit:hover{border-color:var(--border-hi)}
+  .dxcard.u .dxbit.on{color:var(--green); border-color:var(--green)}
+  .dxcard.g .dxbit.on{color:var(--cyan); border-color:var(--cyan)}
+  .dxcard.o .dxbit.on{color:var(--amber); border-color:var(--amber)}
+  .dxtype{font-family:var(--mono); font-size:22px; font-weight:700; min-width:44px; height:34px; padding:0 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--muted); cursor:pointer}
+  .dxtype:hover{border-color:var(--border-hi)}
+  .dxdigit{font-family:var(--crt); font-size:30px; line-height:1; height:30px}
+  .dxcard.t .dxdigit{color:var(--dim)} .dxcard.u .dxdigit{color:var(--green)} .dxcard.g .dxdigit{color:var(--cyan)} .dxcard.o .dxdigit{color:var(--amber)}
+  .dxlabel{font-size:11px; letter-spacing:.4px; color:var(--muted); text-align:center}
+  .dxsummary{text-align:center; margin:18px 0 0; font-family:var(--mono); font-size:13px; color:var(--muted); transition:.18s}
+  .dxsummary .num{font-family:var(--crt); font-size:34px; letter-spacing:4px; display:inline-block; vertical-align:middle; margin-left:8px}
+  .dxsummary.hot{color:var(--green)}
+  .dxexp{margin-top:16px; font-family:var(--mono); font-size:14px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:13px 15px; line-height:1.85; min-height:62px}
+  .dxexp .dh{font-weight:700; margin-bottom:5px}
+  .dxexp .tot{font-weight:700; color:var(--green)}
+  .dxctrl{display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap}
+  @keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}
+  .pulse{animation:pulse .45s ease}
+  @media (max-width:460px){.dxcard{min-width:0; flex:1 1 42%}.dxraw{font-size:21px; letter-spacing:2px}}
+
+  .formula{font-family:var(--mono); font-size:12.5px; color:var(--muted); background:var(--panel);
+    border:1px solid var(--border); border-radius:6px; padding:9px 12px; margin:0 0 18px; text-align:center}
+  .formula-card{font-family:var(--mono); font-size:15px; color:var(--text); line-height:1.85;
+    background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px 16px}
+  .formula-card b{color:var(--green); font-weight:700}
+  .fvd{display:grid; grid-template-columns:38px 1fr 1fr; gap:9px 14px; font-size:13px; align-items:start}
+  .fvd>div{padding:2px 0; color:var(--muted)}
+  .fvdh{font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--dim); border-bottom:1px solid var(--border); padding-bottom:6px}
+  .fvdk{font-family:var(--mono); font-weight:700; color:var(--cyan); font-size:16px}
+  .callout{font-size:13.5px; line-height:1.7; color:var(--muted); border:1px solid var(--border); border-radius:6px; padding:13px 15px}
+  .callout b{color:var(--text); font-weight:500}
+  .callout.warn{border-left:2px solid var(--amber)} .callout.warn>b:first-child{color:var(--amber)}
+  .callout.info{border-left:2px solid var(--cyan)} .callout.info>b:first-child{color:var(--cyan)}
+  .mono{font-family:var(--mono)}
+  .listing{font-family:var(--mono); background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:9px 11px; color:var(--text); font-size:13px; overflow-x:auto}
+  .symnote{border-left:2px solid var(--amber); padding-left:10px; margin-top:10px}
+
   .fb{margin-top:14px; font-size:14px; min-height:22px; line-height:1.7}
   .fb.ok{color:var(--green)} .fb.no{color:var(--red)}
   .fb .mono{font-family:var(--mono); font-weight:500}
@@ -178,23 +236,85 @@
   <div class="win">
     <div class="titlebar">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="path">~/learn/<b>zer<span class="zero">0</span>chmod</b></span>
+      <span class="path">~/learn/zer0chmod</span>
+      <span class="winlabel">Linux Permissions</span>
     </div>
     <div class="body">
-      <h1>zer<span class="zero">0</span>chmod<span class="cur">&nbsp;</span></h1>
-      <p class="by">by zer<span class="zero">0</span>red</p>
-      <p class="sub">learn unix permissions &mdash; <b>r=4</b> <b>w=2</b> <b>x=1</b>, summed per group: user / group / others</p>
+      <h1>chmod<span class="cur">&nbsp;</span></h1>
+      <p class="tagline">by Zer0red</p>
+      <p class="sub"><b>r=4</b> <b>w=2</b> <b>x=1</b>, summed per group: user / group / others</p>
 
       <div class="tabs" id="tabs">
-        <button class="tab active" data-tab="learn">learning</button>
-        <button class="tab" data-tab="sandbox">sandbox</button>
-        <button class="tab" data-tab="test">live test</button>
+        <button class="tab active" data-tab="learn">learn</button>
+        <button class="tab" data-tab="sandbox">simulator</button>
+        <button class="tab" data-tab="test">quiz</button>
       </div>
 
       <div class="tab-panel active" data-panel="learn">
         <div class="panel">
+          <div class="lbl">decode the permission string</div>
+          <p class="legend" style="margin:0 0 14px">this is what <span class="mono">ls -l</span> shows. tap any letter to flip it, or walk through it step by step.</p>
+          <div class="declabel">load an example:</div>
+          <div class="decex" id="decEx"></div>
+          <div class="dxraw" id="dxRaw"></div>
+          <div class="dxrow" id="dxRow"></div>
+          <div class="dxsummary" id="dxSum"></div>
+          <div class="dxexp" id="dxExp"></div>
+          <div class="dxctrl">
+            <button class="ghost" id="dxStep">walk me through it &rsaquo;</button>
+            <button class="ghost" id="dxAll" style="display:none">show all</button>
+          </div>
+          <div style="text-align:center; margin-top:18px"><button class="act" id="decStart">got it &mdash; start quiz &rsaquo;</button></div>
+        </div>
+        <div class="panel">
+          <div class="lbl">file vs directory</div>
+          <p class="legend" style="margin:0 0 14px">the same letters mean different things depending on what they're attached to &mdash; this trips up almost everyone.</p>
+          <div class="fvd">
+            <div class="fvdh"></div><div class="fvdh">on a file</div><div class="fvdh">on a directory</div>
+            <div class="fvdk">r</div><div>read the file's contents</div><div>list the names inside it</div>
+            <div class="fvdk">w</div><div>modify the file's contents</div><div>create, delete, or rename entries</div>
+            <div class="fvdk">x</div><div>run it as a program</div><div>enter it / cd in / access paths inside</div>
+          </div>
+          <div class="callout info" style="margin-top:14px">On directories, <b>x</b> is the important one: <b>r</b> only lets you list names, <b>x</b> lets you actually enter and reach paths inside, and <b>w</b> needs <b>x</b> to be useful (creating or deleting an entry means entering the directory first). So <b>r</b> without <b>x</b> on a folder is rarely what you want.</div>
+        </div>
+        <div class="panel">
+          <div class="lbl">the formula</div>
+          <div class="formula-card">
+            <div>r = 4 &nbsp;&nbsp;&nbsp; w = 2 &nbsp;&nbsp;&nbsp; x = 1 &nbsp;&nbsp;&mdash;&nbsp; add the ones that are set</div>
+            <div style="margin-top:12px">rwx = 4 + 2 + 1 = <b>7</b></div>
+            <div>rw- = 4 + 2 &nbsp;&nbsp;&nbsp;&nbsp; = <b>6</b></div>
+            <div>r-x = 4 &nbsp;&nbsp;&nbsp;&nbsp; + 1 = <b>5</b></div>
+            <div>r-- = 4 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <b>4</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="lbl">common permissions</div>
           <p class="legend" style="margin:0 0 14px">the handful you'll reach for most of the time &mdash; click any row to load it into the sandbox.</p>
           <div class="ctab" id="common"></div>
+        </div>
+        <div class="panel">
+          <div class="lbl">the 777 trap</div>
+          <div class="callout warn">
+            <b>777</b> = rwxrwxrwx: <b>everyone</b> can read, write, and execute.<br><br>
+            It's almost never the correct fix. If something only works at 777, you usually have an <b>ownership</b> or <b>group</b> problem &mdash; fix that instead of opening the file to the whole world. Reach for the narrowest permission that works (often 755 or 775).
+          </div>
+        </div>
+        <div class="panel">
+          <div class="lbl">permissions vs ownership</div>
+          <div class="callout info">
+            <b>chmod</b> changes <b>what</b> the owner / group / others may do.<br>
+            <b>chown</b> changes <b>who</b> the owner and group are.<br><br>
+            <div class="listing">-rw-r-----&nbsp; user&nbsp; www-data&nbsp; config.php</div>
+            <div style="margin-top:12px">Here <b>user</b> (owner) can read &amp; write, the <b>www-data</b> group can read, and others get nothing. To let the group <i>edit</i> it, change permissions (<span class="mono">chmod g+w</span>). To make a different user the owner, change ownership (<span class="mono">chown</span>). A lot of "permission" problems are really ownership problems.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="lbl">symlinks</div>
+          <div class="callout warn">A symlink almost always shows as <span class="mono">lrwxrwxrwx</span>, and those bits are ignored. <b>chmod</b> on a symlink normally changes its <b>target</b>, not the link itself &mdash; so don't reason about a link's own rwx bits.</div>
+        </div>
+        <div class="panel">
+          <div class="lbl">not covered yet</div>
+          <div class="callout">Beyond the basics there are three <b>special</b> bits that appear in the permission string: <b>setuid</b> (<span class="mono">s</span> in the owner's x spot), <b>setgid</b> (<span class="mono">s</span> in the group's x spot), and the <b>sticky bit</b> (<span class="mono">t</span> in others' x spot) &mdash; e.g. <span class="mono">drwxrwxrwt</span> on <span class="mono">/tmp</span>. They add a fourth leading octal digit and aren't part of this trainer yet.</div>
         </div>
       </div>
 
@@ -228,12 +348,14 @@
             <span class="big" id="octOut"></span>
           </div>
           <p class="legend">tip: on a <b>directory</b>, <b>x</b> means "may enter / cd into it", not "execute".</p>
+          <p class="legend symnote" id="symNote" style="display:none">heads up: <b>chmod</b> on a symlink normally changes its <b>target</b>, not the link. Links almost always display as <b>lrwxrwxrwx</b> no matter what.</p>
         </div>
       </div>
 
       <div class="tab-panel" data-panel="test">
         <div class="panel">
-          <div class="rail" id="rail"></div>
+          <div class="formula">r = 4 &nbsp;&middot;&nbsp; w = 2 &nbsp;&middot;&nbsp; x = 1 &nbsp;&nbsp;&rarr;&nbsp;&nbsp; rwx = 7 &nbsp;&middot;&nbsp; rw- = 6 &nbsp;&middot;&nbsp; r-x = 5 &nbsp;&middot;&nbsp; r-- = 4</div>
+          <div class="levels" id="rail"></div>
           <div id="banner"></div>
           <div class="stats">
             <div class="stat"><div class="v" id="sScore">0</div><div class="k">solved</div></div>
@@ -246,6 +368,7 @@
         </div>
         <p class="foot">guess freely &mdash; a wrong answer never breaks your streak, only revealing does.<br>
           <kbd>Enter</kbd> checks, then <kbd>Enter</kbd> again loads the next question.</p>
+        <div style="text-align:center; margin-top:14px"><button class="ghost" id="resetBtn">reset all progress</button></div>
       </div>
     </div>
   </div>
@@ -262,6 +385,8 @@
   function pick(a){return a[Math.floor(Math.random()*a.length)];}
   function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function parseMode(v){var m=(v||'').trim().match(/^(?:chmod\s+)?([0-7])([0-7])([0-7])(?:\s+\S+)?$/i); return m?m[1]+m[2]+m[3]:null;}
+  function parseSym(v){return (v||'').toLowerCase().trim().match(/^(?:chmod\s+)?([ugoa])([+\-=])([rwx]+)(?:\s+\S+)?$/);}
   function rndPerm(){return {u:fromDigit(rd()),g:fromDigit(rd()),o:fromDigit(rd())};}
   function permFromOct(s){return {u:fromDigit(+s[0]),g:fromDigit(+s[1]),o:fromDigit(+s[2])};}
   function octStr(p){return ''+dig(p.u)+dig(p.g)+dig(p.o);}
@@ -272,21 +397,35 @@
     for(var i=0;i<3;i++){var ok=g[i]!==undefined && g[i]===targetStr[i]; out.push(L[i]+' '+(ok?'\u2713':'\u2717'));}
     return out.join('   \u00b7   ');
   }
+  function explainOct(targetStr, guessStr){
+    var g=(guessStr||'').replace(/[^0-7]/g,''), L=['user','group','others'], good=[], bad=[];
+    for(var i=0;i<3;i++){
+      if(g[i]===undefined){ bad.push(L[i]+': missing'); continue; }
+      if(g[i]===targetStr[i]) good.push(L[i]);
+      else bad.push(L[i]+' is off: you put '+g[i]+' ('+sym(fromDigit(+g[i]))+'), target is '+targetStr[i]+' ('+sym(fromDigit(+targetStr[i]))+')');
+    }
+    var out=[]; if(good.length) out.push(good.join(' &amp; ')+' \u2713'); if(bad.length) out.push(bad.join('; '));
+    return out.join(' \u2014 ');
+  }
   var EASY=['755','644','700','600','777','711','750','775','664','640','444','555'];
 
   /* ---------- sandbox ---------- */
   var sb={type:'d',u:{r:false,w:false,x:false},g:{r:false,w:false,x:false},o:{r:false,w:false,x:false}};
   function renderSB(){
+    var isLink = sb.type==='l';
+    var disp = isLink ? {u:{r:true,w:true,x:true},g:{r:true,w:true,x:true},o:{r:true,w:true,x:true}} : sb;
     document.querySelectorAll('#sbGrid .cell').forEach(function(c){
-      var g=c.dataset.g,b=c.dataset.b,on=sb[g][b];
+      var g=c.dataset.g,b=c.dataset.b,on=disp[g][b];
       c.classList.toggle('on',on); c.textContent=on?LET[b]:'-';
     });
-    ['u','g','o'].forEach(function(g){document.getElementById('d-'+g).textContent=dig(sb[g]);});
-    document.getElementById('symOut').innerHTML=symSpan(sb,sb.type);
-    document.getElementById('octOut').innerHTML=octSpan(sb);
+    ['u','g','o'].forEach(function(g){document.getElementById('d-'+g).textContent=dig(disp[g]);});
+    document.getElementById('symOut').innerHTML=symSpan(disp,sb.type);
+    document.getElementById('octOut').innerHTML=isLink ? '<span style="color:var(--dim)">n/a</span>' : octSpan(sb);
+    var grid=document.getElementById('sbGrid'); if(grid) grid.classList.toggle('locked', isLink);
+    var sn=document.getElementById('symNote'); if(sn) sn.style.display = isLink ? 'block' : 'none';
   }
   document.querySelectorAll('#sbGrid .cell').forEach(function(c){
-    c.addEventListener('click',function(){sb[c.dataset.g][c.dataset.b]=!sb[c.dataset.g][c.dataset.b];renderSB();});
+    c.addEventListener('click',function(){if(sb.type==='l')return; sb[c.dataset.g][c.dataset.b]=!sb[c.dataset.g][c.dataset.b];renderSB();});
   });
   document.querySelectorAll('#typeRow .chip').forEach(function(ch){
     ch.addEventListener('click',function(){
@@ -324,6 +463,66 @@
     });
   }
 
+  /* ---------- permission-string decoder ---------- */
+  var DEC_EX=['-rw-r--r--','drwxr-xr-x','drwxr-x---','-rwx------','-rwxrwxrwx'];
+  var DEC_STEPS=['t','u','g','o','octal'];
+  var decType='-', decBits={u:{r:false,w:false,x:false},g:{r:false,w:false,x:false},o:{r:false,w:false,x:false}}, decFocus='u', decWalk=false;
+  function parseInto(s){decType=s[0]; ['u','g','o'].forEach(function(k,i){var t=s.slice(1+i*3,4+i*3); decBits[k]={r:t[0]==='r',w:t[1]==='w',x:t[2]==='x'};});}
+  function triStr(k){var t=decBits[k]; return (t.r?'r':'-')+(t.w?'w':'-')+(t.x?'x':'-');}
+  function triDig(k){var t=decBits[k]; return (t.r?4:0)+(t.w?2:0)+(t.x?1:0);}
+  function curStr(){return decType+triStr('u')+triStr('g')+triStr('o');}
+  function decTypeName(c){return c==='d'?'directory':c==='l'?'symlink':'regular file';}
+  function permWords(k){var isDir=decType==='d', m=isDir?{r:'list',w:'write',x:'enter'}:{r:'read',w:'write',x:'execute'}, t=decBits[k], p=[]; if(t.r)p.push(m.r); if(t.w)p.push(m.w); if(t.x)p.push(m.x); return p.length?p.join(' + '):'no access';}
+  function setStepUI(){var s=document.getElementById('dxStep'), a=document.getElementById('dxAll'); if(!s)return; s.textContent=decWalk?(decFocus==='octal'?'restart \u203a':'next step \u203a'):'walk me through it \u203a'; a.style.display=decWalk?'':'none';}
+  function buildTriCard(k,pulse){
+    var dim=decWalk && decFocus!==k;
+    var div=document.createElement('div'); div.className='dxcard '+k+(decFocus===k?' focus':'')+(dim?' dim':'');
+    var bits=document.createElement('div'); bits.className='dxbits';
+    ['r','w','x'].forEach(function(b){var btn=document.createElement('button'); btn.className='dxbit'+(decBits[k][b]?' on':''); btn.textContent=decBits[k][b]?b:'-'; btn.addEventListener('click',function(e){e.stopPropagation(); decBits[k][b]=!decBits[k][b]; decFocus=k; decWalk=false; setStepUI(); renderDecoder(k);}); bits.appendChild(btn);});
+    var dig=document.createElement('div'); dig.className='dxdigit'+(pulse===k?' pulse':''); dig.textContent=triDig(k);
+    var lab=document.createElement('div'); lab.className='dxlabel'; lab.textContent={u:'owner / user',g:'group',o:'others'}[k];
+    div.appendChild(bits); div.appendChild(dig); div.appendChild(lab);
+    div.addEventListener('click',function(){decFocus=k; decWalk=false; setStepUI(); renderDecoder();});
+    return div;
+  }
+  function buildTypeCard(){
+    var dim=decWalk && decFocus!=='t';
+    var div=document.createElement('div'); div.className='dxcard t'+(decFocus==='t'?' focus':'')+(dim?' dim':'');
+    var tb=document.createElement('button'); tb.className='dxtype'; tb.textContent=decType;
+    tb.addEventListener('click',function(e){e.stopPropagation(); decType=(decType==='d'?'-':'d'); decFocus='t'; decWalk=false; setStepUI(); renderDecoder('t');});
+    var dig=document.createElement('div'); dig.className='dxdigit'; dig.textContent='\u2014';
+    var lab=document.createElement('div'); lab.className='dxlabel'; lab.textContent='type';
+    div.appendChild(tb); div.appendChild(dig); div.appendChild(lab);
+    div.addEventListener('click',function(){decFocus='t'; decWalk=false; setStepUI(); renderDecoder();});
+    return div;
+  }
+  function renderExp(){
+    var d=document.getElementById('dxExp'), isDir=decType==='d';
+    if(decFocus==='octal'){
+      var o=''+triDig('u')+triDig('g')+triDig('o');
+      d.innerHTML='<div class="dh" style="color:var(--green)">octal mode = '+o+'</div>owner/user '+triStr('u')+' = '+triDig('u')+' &middot; group '+triStr('g')+' = '+triDig('g')+' &middot; others '+triStr('o')+' = '+triDig('o')+'<br>this is the number you pass to chmod: <span class="tot">chmod '+o+' &lt;name&gt;</span>';
+    } else if(decFocus==='t'){
+      d.innerHTML='<div class="dh" style="color:var(--muted)">type &mdash; '+decType+' = '+decTypeName(decType)+'</div>'+(isDir?'on a directory, <b>x</b> means you can enter it (cd into it), not execute. <span style="color:var(--dim)">tap to switch file/dir.</span>':'on a file, <b>x</b> means you can run it as a program. <span style="color:var(--dim)">tap to switch file/dir.</span>');
+    } else {
+      var k=decFocus, label={u:'owner / user',g:'group',o:'others'}[k], col={u:'var(--green)',g:'var(--cyan)',o:'var(--amber)'}[k], m={r:4,w:2,x:1}, set=[];
+      ['r','w','x'].forEach(function(b){if(decBits[k][b])set.push(m[b]);});
+      d.innerHTML='<div class="dh" style="color:'+col+'">'+label.toUpperCase()+' &mdash; '+triStr(k)+'</div>'+permWords(k)+'<br>'+(set.length?set.join(' + '):'0')+' = <span class="tot">'+triDig(k)+'</span>';
+    }
+  }
+  function renderDecoder(pulse){
+    var ex=document.getElementById('decEx'); if(!ex)return;
+    var cur=curStr();
+    ex.innerHTML='';
+    DEC_EX.forEach(function(s){var b=document.createElement('button'); b.className='chip'+(s===cur?' sel':''); b.textContent=s; b.addEventListener('click',function(){parseInto(s); decFocus='octal'; decWalk=false; setStepUI(); renderDecoder('octal');}); ex.appendChild(b);});
+    document.getElementById('dxRaw').innerHTML='<span class="ty">'+decType+'</span><span class="gu">'+triStr('u')+'</span><span class="gg">'+triStr('g')+'</span><span class="go">'+triStr('o')+'</span>';
+    var row=document.getElementById('dxRow'); row.innerHTML='';
+    row.appendChild(buildTypeCard()); ['u','g','o'].forEach(function(k){row.appendChild(buildTriCard(k,pulse));});
+    var sum=document.getElementById('dxSum'), hot=(decFocus==='octal'); sum.className='dxsummary'+(hot?' hot':'')+((decWalk&&!hot)?' dim':'');
+    var np=(pulse==='octal'||pulse==='u'||pulse==='g'||pulse==='o')?' pulse':'';
+    sum.innerHTML='octal mode <span class="num'+np+'"><span class="gu">'+triDig('u')+'</span><span class="gg">'+triDig('g')+'</span><span class="go">'+triDig('o')+'</span></span>';
+    renderExp();
+  }
+
   /* ---------- state ---------- */
   var ST={solved:0,best:0,first:0,total:0,unlocked:1};
   try{var s=JSON.parse(localStorage.getItem('chmodTrainer')); if(s){ST.solved=s.solved||0;ST.best=s.best||0;ST.first=s.first||0;ST.total=s.total||0;ST.unlocked=s.unlocked||1;}}catch(e){}
@@ -352,7 +551,7 @@
     return {kind:'text', key:'r'+octStr(p), attrs:{maxlength:3,inputmode:'numeric',placeholder:'e.g. 755'},
       prompt:'<p class="qprompt"><span class="arrow">level 2 &rarr;</span> convert this permission to octal</p><div class="qbig">'+symSpan(p)+'</div>',
       ok:function(v){return v.trim()===octStr(p);},
-      wrong:function(v){return tickOct(octStr(p),v);},
+      wrong:function(v){return explainOct(octStr(p),v);},
       hints:['solve it one group at a time: user, then group, then others.','user '+parts(p.u)+', group '+parts(p.g)+', others '+parts(p.o)+'.'],
       reveal: octStr(p)+' &mdash; user '+parts(p.u)+'='+dig(p.u)+', group '+parts(p.g)+'='+dig(p.g)+', others '+parts(p.o)+'='+dig(p.o) };
   }
@@ -362,7 +561,7 @@
     return {kind:'grid', key:'b'+sstr, state:state,
       prompt:'<p class="qprompt"><span class="arrow">level 3 &rarr;</span> toggle the bits to match this octal</p><div class="qbig">'+octSpan(target)+'</div>',
       ok:function(st){return octStr(st)===sstr;},
-      wrong:function(st){return tickOct(sstr,octStr(st));},
+      wrong:function(st){return explainOct(sstr,octStr(st));},
       hints:['each group\u2019s little number (right column) should match the target digit.','targets &mdash; user '+sstr[0]+', group '+sstr[1]+', others '+sstr[2]+'.'],
       reveal: symSpan(target)+' = '+sstr };
   }
@@ -371,8 +570,8 @@
     return {kind:'text', key:'n'+octStr(c)+octStr(g), attrs:{maxlength:24,placeholder:'e.g. chmod 750 file'},
       prompt:'<p class="qprompt"><span class="arrow">level 4 &rarr;</span> write the numeric command to reach the goal</p>'+
         '<div class="qline"><span class="k">now</span> <span style="font-weight:700">'+symSpan(c)+'</span> &nbsp;('+octSpan(c)+')<br><span class="k">goal</span> <span style="font-weight:700">'+symSpan(g)+'</span></div>',
-      ok:function(v){var m=v.match(/([0-7])\s*([0-7])\s*([0-7])/); return m && (m[1]+m[2]+m[3])===octStr(g);},
-      wrong:function(v){var m=v.match(/([0-7])\s*([0-7])\s*([0-7])/); if(!m)return 'type a 3-digit mode, e.g. chmod 755 file.'; return tickOct(octStr(g), m[1]+m[2]+m[3]);},
+      ok:function(v){return parseMode(v)===octStr(g);},
+      wrong:function(v){var p=parseMode(v); if(!p)return 'enter a 3-digit mode like 755 (optionally as chmod 755 file).'; return explainOct(octStr(g), p);},
       hints:['read the GOAL line as a number, group by group.','goal in octal is '+octStr(g)+'.'],
       reveal:'chmod '+octStr(g)+' &lt;file&gt;' };
   }
@@ -387,12 +586,12 @@
 
   function genSymWrite(diff){
     var c=pick(diff?CLASSES:CLASSES.slice(0,3)), o=pick(diff?OPS:OPS.slice(0,2)), pm=pick(PERMS);
-    var want='chmod '+c[0]+o[0]+pm[0];
+    var want=c[0]+o[0]+pm[0];
     return {kind:'text', key:'sw'+c[0]+o[0]+pm[0], attrs:{maxlength:24,placeholder:'e.g. chmod g+x file'},
       prompt:'<p class="qprompt"><span class="arrow">level 5 &rarr;</span> now <b>write</b> the symbolic command for this change</p>'+SYMREF+
         '<div class="qline" style="font-size:17px"><b>'+o[1]+'</b> the <b>'+pm[1]+'</b> permission for <b>'+c[1]+'</b></div>',
-      ok:function(v){var m=v.toLowerCase().match(/([ugoa])\s*([\-+=])\s*([rwx]+)/); return m && m[1]===c[0] && m[2]===o[0] && m[3].indexOf(pm[0])>-1;},
-      wrong:function(v){var m=v.toLowerCase().match(/([ugoa])\s*([\-+=])\s*([rwx]+)/); if(!m)return 'format: chmod &lt;who&gt;&lt;op&gt;&lt;perm&gt;, e.g. chmod g+x file.'; var e=[]; if(m[1]!==c[0])e.push('who should be '+c[0]); if(m[2]!==o[0])e.push('op should be '+o[0]); if(m[3].indexOf(pm[0])<0)e.push('perm should include '+pm[0]); return e.length?('check: '+e.join(', ')+'.'):'so close, press check again.';},
+      ok:function(v){var m=parseSym(v); return !!m && m[1]===c[0] && m[2]===o[0] && m[3]===pm[0];},
+      wrong:function(v){var m=parseSym(v); if(!m)return 'format: chmod &lt;who&gt;&lt;op&gt;&lt;perm&gt;, e.g. chmod g+x file.'; var e=[]; if(m[1]!==c[0])e.push('who should be '+c[0]); if(m[2]!==o[0])e.push('op should be '+o[0]); if(m[3]!==pm[0])e.push('perm should be exactly '+pm[0]+' (no extra letters)'); return e.length?('check: '+e.join(', ')+'.'):'so close, press check again.';},
       hints:['who = '+c[0]+' ('+c[1]+'), op = '+o[0]+' ('+o[1]+'), perm = '+pm[0]+' ('+pm[1]+').'],
       reveal:'chmod '+want+' &lt;file&gt;' };
   }
@@ -418,25 +617,70 @@
   }
 
   function genSym(diff){ return diff? genSymWrite(1) : genSymRead(0); }
-  function genMix(){return pick([genTriad,genRead,genBuild,genNum,genSym])(1);}
+
+  var SCENARIOS=[
+    {id:'sshkey', prompt:'You have an SSH private key (<span class="mono">~/.ssh/id_rsa</span>). What permission should it have?',
+      options:[['600',1],['644',0],['755',0],['777',0]],
+      reveal:'600 (rw-------) &mdash; only you can read it. SSH refuses a key that others can read.'},
+    {id:'webdir', prompt:'A public web directory the server must read and enter. Common permission?',
+      options:[['755',1],['644',0],['700',0],['666',0]],
+      reveal:'755 (rwxr-xr-x) &mdash; owner full access; others can read and enter.'},
+    {id:'pubfile', prompt:'A file everyone may read, but only you may edit. Permission?',
+      options:[['644',1],['600',0],['664',0],['666',0]],
+      reveal:'644 (rw-r--r--) &mdash; you read/write, everyone else reads.'},
+    {id:'denied', prompt:'You get <span class="mono">Permission denied</span> running <span class="mono">./script.sh</span>. Which command fixes it?',
+      options:[['chmod a+x script.sh',1],['chmod a-x script.sh',0],['chmod 644 script.sh',0],['rm script.sh',0]],
+      reveal:'chmod a+x script.sh adds the execute bit for everyone, so the script can run.'},
+    {id:'safer', prompt:'A web server must READ a config file but never write it. Which is safer?',
+      options:[['644',1],['666',0]],
+      reveal:'644 &mdash; 666 lets any process (or attacker) write the file. Grant only what is needed.'},
+    {id:'privdir', prompt:'A private directory only you may enter (like <span class="mono">~/.ssh</span>). Permission?',
+      options:[['700',1],['755',0],['777',0],['644',0]],
+      reveal:'700 (rwx------) &mdash; fully closed to group and others.'},
+    {id:'groupwrite', prompt:'<span class="mono">-rw-r----- user www-data config.php</span>. The <b>www-data</b> group must EDIT it. Best fix?',
+      options:[['chmod g+w config.php',1],['change the owner with chown',0],['chmod 777 config.php',0]],
+      reveal:'The group already has access &mdash; it just lacks write. chmod g+w adds it without opening the file to everyone.'},
+    {id:'wrongowner', prompt:'A file is owned by <b>root</b> but should belong to <b>you</b>. chmod or chown?',
+      options:[['chown (change the owner)',1],['chmod (change the perms)',0]],
+      reveal:'chown changes who owns it. chmod only changes what the current owner/group/others may do.'},
+    {id:'sevenfix', prompt:'Something only works after <span class="mono">chmod 777</span>. What is usually the real problem?',
+      options:[['Wrong owner/group &mdash; fix with chown',1],['The file genuinely needs 777',0],['Permissions never matter',0]],
+      reveal:'777 is rarely the right fix. Usually the file just has the wrong owner or group &mdash; fix ownership with chown instead.'}
+  ];
+  function genScenario(diff){
+    var sc=pick(SCENARIOS), opts=sc.options.map(function(o){return {label:o[0], ok:!!o[1]};});
+    shuffle(opts);
+    return {kind:'choice', key:'sc'+sc.id,
+      prompt:'<p class="qprompt"><span class="arrow">scenario &rarr;</span> '+sc.prompt+'</p>',
+      choices:opts,
+      wrong:function(){return 'not the safest choice &mdash; think about who needs access, and whether they need read, write, or execute.';},
+      hints:['ask: who needs access (you / group / everyone), and to do what (read / write / run)?'],
+      reveal: sc.reveal };
+  }
+  function genMix(){return pick([genTriad,genRead,genBuild,genNum,genSym,genScenario])(1);}
 
   var stages=[
-    {label:'1 \u00b7 one group', goal:6, gen:genTriad},
-    {label:'2 \u00b7 read full', goal:6, gen:genRead},
-    {label:'3 \u00b7 build', goal:6, gen:genBuild},
-    {label:'4 \u00b7 chmod #', goal:6, gen:genNum},
-    {label:'5 \u00b7 chmod sym', goal:6, gen:genSym},
-    {label:'\u221e \u00b7 mixed', goal:Infinity, gen:genMix}
+    {num:'1', name:'one group', desc:'read a single rwx group', goal:6, gen:genTriad},
+    {num:'2', name:'read full', desc:'full permission \u2192 octal', goal:6, gen:genRead},
+    {num:'3', name:'build', desc:'octal \u2192 toggle the bits', goal:6, gen:genBuild},
+    {num:'4', name:'chmod #', desc:'numeric chmod command', goal:6, gen:genNum},
+    {num:'5', name:'chmod sym', desc:'symbolic chmod (u+x)', goal:6, gen:genSym},
+    {num:'6', name:'scenarios', desc:'real-world situations', goal:6, gen:genScenario},
+    {num:'\u221e', name:'mixed', desc:'everything, endless', goal:Infinity, gen:genMix}
   ];
 
   /* ---------- rail / progress ---------- */
   function renderRail(){
     var r=document.getElementById('rail'); r.innerHTML='';
     for(var i=0;i<stages.length;i++){
-      var locked=i>=ST.unlocked, done=i<ST.unlocked-1;
+      var st=stages[i], locked=i>=ST.unlocked, done=i<ST.unlocked-1, current=(i===cur);
+      var badge = done ? '\u2713' : st.num;
+      var stat = locked ? 'locked'
+        : current ? (st.goal===Infinity ? 'in progress' : 'progress '+Math.min(stageCorrect,st.goal)+'/'+st.goal)
+        : done ? 'cleared' : 'open';
       var b=document.createElement('button');
-      b.className='srt'+(i===cur?' cur':'')+(done?' done':'')+(locked?' lock':'');
-      b.innerHTML=(done?'\u2713 ':'')+stages[i].label;
+      b.className='level'+(current?' cur':'')+(done?' done':'')+(locked?' lock':'');
+      b.innerHTML='<span class="lbadge">'+badge+'</span><span class="lname">'+st.name+'</span><span class="ldesc">'+st.desc+'</span><span class="lstat">'+stat+'</span>';
       if(!locked){(function(idx){b.addEventListener('click',function(){setStage(idx);});})(i);}
       r.appendChild(b);
     }
@@ -455,7 +699,7 @@
     ST.solved++; ST.total++; streak++; if(streak>ST.best)ST.best=streak; if(clean)ST.first++;
     stageCorrect++;
     if(stages[cur].goal!==Infinity && stageCorrect>=stages[cur].goal && cur+1<stages.length && ST.unlocked<cur+2){
-      ST.unlocked=cur+2; banner('stage cleared &mdash; "'+stages[cur+1].label.replace(/^[0-9\u221e]+ \u00b7 /,'')+'" unlocked. keep going here or jump ahead.'); renderRail();
+      ST.unlocked=cur+2; banner('stage cleared &mdash; "'+stages[cur+1].name+'" unlocked. keep going here or jump ahead.'); renderRail();
     }
     save(); stats(); renderBar();
   }
@@ -548,7 +792,26 @@
   }
   document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){switchTab(t.dataset.tab);});});
 
-  renderCommon(); renderRail(); renderBar(); stats(); newQ();
+  var dxStep=document.getElementById('dxStep');
+  if(dxStep)dxStep.addEventListener('click',function(){
+    if(!decWalk){decWalk=true; decFocus='t';}
+    else{decFocus=(decFocus==='octal')?'t':DEC_STEPS[DEC_STEPS.indexOf(decFocus)+1];}
+    setStepUI(); renderDecoder((decFocus==='t')?null:decFocus);
+  });
+  var dxAll=document.getElementById('dxAll');
+  if(dxAll)dxAll.addEventListener('click',function(){decWalk=false; decFocus='u'; setStepUI(); renderDecoder();});
+  var decStart=document.getElementById('decStart');
+  if(decStart)decStart.addEventListener('click',function(){switchTab('test'); var w=document.querySelector('.win'); if(w&&w.scrollIntoView)w.scrollIntoView({behavior:'smooth',block:'start'});});
+
+  var resetB=document.getElementById('resetBtn');
+  if(resetB)resetB.addEventListener('click',function(){
+    if(!confirm('Reset all progress? This clears your solved count, streaks, and unlocked stages.'))return;
+    ST={solved:0,best:0,first:0,total:0,unlocked:1}; streak=0; cur=0; stageCorrect=0; recent=[];
+    save(); banner(''); renderRail(); renderBar(); stats(); newQ();
+  });
+
+  parseInto(DEC_EX[1]); decFocus='octal';
+  renderDecoder(); renderCommon(); renderRail(); renderBar(); stats(); newQ();
 })();
 </script>
 </body>
