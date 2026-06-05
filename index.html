@@ -832,16 +832,16 @@
   var LSDATE='Jun  5 12:04';
   var TERM_NAMES=['config.php','notes.txt','backup.sh','deploy.sh','secret.key','index.html','data.csv','run.sh'];
   var TERM_SCENARIOS=[
-    {text:'The owner wants to run this script &mdash; give the owner execute permission.', name:'deploy.sh', start:'644', target:'744'},
-    {text:'Make the script executable by everyone.', name:'backup.sh', start:'644', target:'755'},
-    {text:"Others shouldn't be able to read this file &mdash; keep the owner's read &amp; write.", name:'notes.txt', start:'644', target:'640'},
-    {text:'Lock it down: only the owner may read and write, nobody else gets anything.', name:'secret.key', start:'644', target:'600'},
-    {text:'Let the group edit the file (add write for the group).', name:'report.txt', start:'644', target:'664'},
-    {text:'Make the file read-only for everyone (remove all write access).', name:'data.csv', start:'664', target:'444'},
-    {text:'The owner lost read access by mistake &mdash; give the owner read back.', name:'config.php', start:'244', target:'644'},
-    {text:'Give the owner full control: read, write, and execute.', name:'run.sh', start:'400', target:'700'},
-    {text:'Let others read the file, but not change it.', name:'index.html', start:'600', target:'604'},
-    {text:'No one but the owner should even read this &mdash; owner keeps read &amp; write.', name:'id_rsa', start:'604', target:'600'}
+    {text:'The owner wants to run <b>deploy.sh</b> &mdash; give the owner execute permission.', name:'deploy.sh', start:'644', target:'744'},
+    {text:'Make <b>backup.sh</b> executable by everyone.', name:'backup.sh', start:'644', target:'755'},
+    {text:"Others shouldn't be able to read <b>notes.txt</b> &mdash; keep the owner's read &amp; write, and the group's read.", name:'notes.txt', start:'644', target:'640'},
+    {text:'Lock down <b>secret.key</b>: only the owner may read &amp; write, nobody else gets anything.', name:'secret.key', start:'644', target:'600'},
+    {text:'Let the group edit <b>report.txt</b> &mdash; add write for the group (others stay read-only).', name:'report.txt', start:'644', target:'664'},
+    {text:'Make <b>data.csv</b> read-only for everyone (remove all write access).', name:'data.csv', start:'664', target:'444'},
+    {text:'The owner lost read access to <b>config.php</b> by mistake &mdash; give the owner read back.', name:'config.php', start:'244', target:'644'},
+    {text:'Give the owner full control of <b>run.sh</b>: read, write &amp; execute (group &amp; others get nothing).', name:'run.sh', start:'400', target:'700'},
+    {text:'Let others read <b>index.html</b> but not change it (owner keeps read &amp; write, group stays as is).', name:'index.html', start:'600', target:'604'},
+    {text:'No one but the owner should read <b>id_rsa</b> &mdash; the owner keeps read &amp; write.', name:'id_rsa', start:'604', target:'600'}
   ];
   function termTier(){ return termSolved<2?'easy':termSolved<4?'medium':termSolved<6?'realistic':'expert'; }
   function clonePerms(p){return {u:{r:p.u.r,w:p.u.w,x:p.u.x},g:{r:p.g.r,w:p.g.w,x:p.g.x},o:{r:p.o.r,w:p.o.w,x:p.o.x}};}
@@ -884,9 +884,10 @@
     var f=targetFile();
     if(f && octStr(f.perms)===TASK.targetOct){
       termDone=true; termSolved++; ST.term=termSolved; save(); updateTermCount();
-      termPrint('\u2713 done \u2014 '+f.name+' is now '+symFull(f.perms,isColor())+' ('+TASK.targetOct+').','ok');
+      termPrint('\u2713 done \u2014 '+f.name+' is now '+symFull(f.perms,isColor())+' ('+TASK.targetOct+'). press <b>Enter</b> for the next one.','ok');
       var rs=relSym(TASK.startOct,TASK.targetOct);
-      termPrint('# best answer: <span class="mono">chmod '+rs+' '+f.name+'</span>  (or numeric <span class="mono">chmod '+TASK.targetOct+' '+f.name+'</span>). press Enter for the next one.','tip');
+      if(rs && rs.indexOf(',')===-1) termPrint('# a pro would usually write <span class="mono">chmod '+rs+' '+f.name+'</span> for a tweak like this (numeric <span class="mono">chmod '+TASK.targetOct+' '+f.name+'</span> works too).','tip');
+      else termPrint('# for a full mode like this, numeric is the clean way: <span class="mono">chmod '+TASK.targetOct+' '+f.name+'</span>.','tip');
       return true;
     }
     return false;
@@ -913,7 +914,7 @@
     if(!res.ok){termPrint(res.err,'err'); termErr++; return;}
     f.perms=copy;
     termPrint(fileLine(f));
-    if(!checkWin() && f.name===TASK.targetName){ termPrint('# not there yet \u2014 keep going.','tip'); }
+    if(!checkWin() && f.name===TASK.targetName){ termPrint("# not there yet \u2014 keep going (tap 'hint' if you're stuck).",'tip'); }
   }
   function buildExpert(){
     function mk(files,targetName,targetOct,startOct,text){ shuffle(files); return {files:files,targetName:targetName,targetOct:targetOct,startOct:startOct,text:text,multi:true}; }
