@@ -246,15 +246,12 @@
   .termwin{border:1px solid var(--border-hi); border-radius:8px; overflow:hidden; background:var(--bg)}
   .termbar{display:flex; align-items:center; gap:7px; padding:8px 12px; background:var(--panel2); border-bottom:1px solid var(--border)}
   .termtitle{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--dim)}
-  .termlevel{margin-left:auto; font-family:var(--mono); font-size:10px; letter-spacing:1.5px; padding:2px 8px; border-radius:4px; border:1px solid currentColor}
-  .termlevel.easy{color:var(--green)} .termlevel.medium{color:var(--cyan)} .termlevel.realistic{color:var(--amber)} .termlevel.expert{color:var(--red)}
   .tierpick{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px}
   .tierchip{font-family:var(--mono); font-size:11px; letter-spacing:1px; padding:5px 11px; border-radius:6px; cursor:pointer; background:var(--panel2); color:var(--muted); border:1px solid var(--border); transition:all .12s}
   .tierchip:hover{border-color:var(--border-hi); color:var(--text)}
   .tierchip.on{background:transparent; color:currentColor; font-weight:700}
   .tierchip.easy.on{color:var(--green); border-color:var(--green)}
-  .tierchip.medium.on{color:var(--cyan); border-color:var(--cyan)}
-  .tierchip.realistic.on{color:var(--amber); border-color:var(--amber)}
+  .tierchip.medium.on{color:var(--amber); border-color:var(--amber)}
   .tierchip.expert.on{color:var(--red); border-color:var(--red)}
   .term{padding:12px 14px; font-family:var(--mono); font-size:13px; line-height:1.65; min-height:150px; max-height:260px; overflow-y:auto; white-space:pre-wrap; overflow-wrap:break-word; color:var(--green)}
   .termline{color:var(--green)}
@@ -262,7 +259,8 @@
   .termline.tip{color:var(--muted)}
   .termline.sol{color:var(--amber)}
   .termline.err{color:var(--red)}
-  .termline.ok{color:var(--green)}
+  .termline.ok{color:var(--green); margin-top:14px; padding-top:12px; border-top:1px dashed var(--border)}
+  .termline.go{color:var(--muted); margin-bottom:4px}
   .ps1u{color:var(--green); font-weight:700}
   .ps1p{color:var(--muted)}
   .termin{display:flex; align-items:center; gap:8px; padding:9px 14px; border-top:1px solid var(--border); background:var(--panel2)}
@@ -495,7 +493,7 @@
           <p class="termtask" id="termGoal"></p>
           <div class="tierpick" id="tierPick"></div>
           <div class="termwin">
-            <div class="termbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="termtitle">user@chmodzilla: ~</span><span class="termlevel" id="termLevel"></span></div>
+            <div class="termbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="termtitle">user@chmodzilla: ~</span></div>
             <div class="term" id="termOut"></div>
             <div class="termin"><span class="ps1u">user@chmodzilla</span><span class="ps1p">:~$</span><input id="termInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="type a command&hellip;"></div>
           </div>
@@ -966,7 +964,7 @@
   }
 
   /* ---------- CLI terminal simulator ---------- */
-  var TASK=null, termErr=0, termDone=false, termHist=[], termHi=0, termSolved=0, curTier='easy';
+  var TASK=null, termErr=0, termDone=false, termHist=[], termHi=0, termSolved=0, curTier='easy', termCmds=0;
   var PS1='<span class="ps1u">user@chmodzilla</span><span class="ps1p">:~$</span>';
   var LSDATE='Jun  5 12:04';
   var TERM_NAMES=['config.php','notes.txt','backup.sh','deploy.sh','secret.key','index.html','data.csv','run.sh'];
@@ -983,10 +981,10 @@
     {text:'No one but the owner should read <b>id_rsa</b> &mdash; the owner keeps read &amp; write.', name:'id_rsa', start:'604', target:'600'}
   ];
   function termTier(){ return curTier; }
-  function renderTierPick(){var w=document.getElementById('tierPick'); if(!w)return; var tiers=['easy','medium','realistic','expert']; w.innerHTML=tiers.map(function(t){return '<button class="tierchip '+t+(t===curTier?' on':'')+'" data-tier="'+t+'">'+tierLabel(t)+'</button>';}).join('');}
+  function renderTierPick(){var w=document.getElementById('tierPick'); if(!w)return; var tiers=['easy','medium','expert']; w.innerHTML=tiers.map(function(t){return '<button class="tierchip '+t+(t===curTier?' on':'')+'" data-tier="'+t+'">'+tierLabel(t)+'</button>';}).join('');}
   function setTier(t){ curTier=t; if(ST)ST.termTier=t; save(); renderTierPick(); newTermTask(); var inp=document.getElementById('termInput'); if(inp)inp.focus(); }
   function clonePerms(p){return {u:{r:p.u.r,w:p.u.w,x:p.u.x},g:{r:p.g.r,w:p.g.w,x:p.g.x},o:{r:p.o.r,w:p.o.w,x:p.o.x}};}
-  function tierLabel(t){ return {easy:'EASY',medium:'MEDIUM',realistic:'REALISTIC',expert:'EXPERT'}[t]; }
+  function tierLabel(t){ return {easy:'EASY',medium:'MEDIUM',expert:'EXPERT'}[t]; }
   function isColor(){ return termTier()==='easy'; }
   function symFull(p,color,type){ var t=type||'-'; if(color) return '<span class="ty">'+t+'</span><span class="gu">'+sym(p.u)+'</span><span class="gg">'+sym(p.g)+'</span><span class="go">'+sym(p.o)+'</span>'; return t+sym(p.u)+sym(p.g)+sym(p.o); }
   function fileLine(f){ var dir=f.type==='d'; return symFull(f.perms,isColor(),f.type)+' '+(dir?'2':'1')+' '+(f.owner||'user')+' '+(f.group||'user')+' '+(dir?'4096':(f.size!=null?f.size:'0'))+' '+LSDATE+' '+f.name; }
@@ -1020,16 +1018,28 @@
     return cl.join(',');
   }
   function termPrint(html,cls){var t=document.getElementById('termOut'); if(!t)return; var d=document.createElement('div'); d.className='termline'+(cls?' '+cls:''); d.innerHTML=html; t.appendChild(d); t.scrollTop=t.scrollHeight;}
-  function updateTermCount(){var c=document.getElementById('termCount'); if(c)c.textContent='files fixed: '+termSolved; var b=document.getElementById('termLevel'); if(b){var tr=termTier(); b.textContent=tierLabel(tr); b.className='termlevel '+tr;}}
+  function updateTermCount(){var c=document.getElementById('termCount'); if(c)c.textContent='files fixed: '+termSolved;}
   function termDiff(){var f=targetFile(), tgt=permFromOct(TASK.targetOct), out=[],L={u:'owner',g:'group',o:'others'}; if(!f)return out; ['u','g','o'].forEach(function(k){['r','w','x'].forEach(function(b){if(f.perms[k][b]!==tgt[k][b])out.push(L[k]+' '+(tgt[k][b]?'+':'-')+b);});}); return out;}
-  function checkWin(){
+  function checkWin(usedMode, oneShot){
     var f=targetFile();
     if(f && octStr(f.perms)===TASK.targetOct){
       termDone=true; termSolved++; ST.term=termSolved; save(); updateTermCount();
-      termPrint('\u2713 done \u2014 '+f.name+' is now '+symFull(f.perms,isColor(),f.type)+' ('+TASK.targetOct+'). press <b>Enter</b> for the next one.','ok');
-      var rs=relSym(TASK.startOct,TASK.targetOct);
-      if(rs && rs.indexOf(',')===-1) termPrint('# a pro would usually write <span class="mono">chmod '+rs+' '+f.name+'</span> for a tweak like this (numeric <span class="mono">chmod '+TASK.targetOct+' '+f.name+'</span> works too).','tip');
-      else termPrint('# for a full mode like this, numeric is the clean way: <span class="mono">chmod '+TASK.targetOct+' '+f.name+'</span>.','tip');
+      termPrint('\u2713 done \u2014 '+f.name+' is now '+symFull(f.perms,isColor(),f.type)+' ('+TASK.targetOct+').','ok');
+      var rs=relSym(TASK.startOct,TASK.targetOct), num=TASK.targetOct, name=f.name;
+      var bestSym = rs && rs.indexOf(',')===-1;
+      var usedNum = /^[0-7]{3}$/.test(usedMode);
+      var sym='<span class="mono">chmod '+rs+' '+name+'</span>', oct='<span class="mono">chmod '+num+' '+name+'</span>';
+      var msg;
+      if(bestSym){
+        if(oneShot && usedMode===rs) msg='\uD83C\uDF89 congrats \u2014 that\u2019s the cleanest way to write it. another way: '+oct+'.';
+        else if(oneShot && usedNum) msg='correct! that works \u2014 for a single change like this the tidiest way is '+sym+'.';
+        else msg='nicely done. the cleanest way for a change like this is '+sym+' (or numeric '+oct+').';
+      } else {
+        if(oneShot && usedNum) msg='\uD83C\uDF89 congrats \u2014 numeric is the clean way for a full mode like this.';
+        else msg='nicely done. for a full mode like this, numeric is the clean way: '+oct+'.';
+      }
+      termPrint(msg,'tip');
+      termPrint('press <b>Enter</b> for the next one.','go');
       return true;
     }
     return false;
@@ -1057,9 +1067,9 @@
     if(!f){termPrint("chmod: cannot access '"+esc(parts[2])+"': No such file or directory",'err'); termErr++; return;}
     var copy=clonePerms(f.perms), res=applyChmod(copy, parts[1].toLowerCase());
     if(!res.ok){termPrint(esc(res.err),'err'); termErr++; return;}
-    f.perms=copy;
+    f.perms=copy; termCmds++;
     termPrint(fileLine(f));
-    if(!checkWin() && f.name===TASK.targetName){ termPrint("# not there yet \u2014 keep going (tap 'hint' if you're stuck).",'tip'); }
+    if(!checkWin(parts[1].toLowerCase(), termCmds===1) && f.name===TASK.targetName){ termPrint("# not there yet \u2014 keep going (tap 'hint' if you're stuck).",'tip'); }
   }
   var EX_FILES=['notes.txt','data.csv','index.html','report.txt','README.md','app.log','styles.css','todo.md','cache.dat','archive.zip'];
   var EX_DIRS=['logs','backups','src','config','public','assets','docs','tmp','vendor','uploads'];
@@ -1099,7 +1109,7 @@
   var termRecent=[];
   function genTermTask(tier){
     if(tier==='expert') return buildExpert();
-    if(tier==='realistic'){ var sc=pick(TERM_SCENARIOS); return {kind:'sc-'+sc.name, files:[{name:sc.name,perms:permFromOct(sc.start)}], targetName:sc.name, targetOct:sc.target, startOct:sc.start, text:sc.text}; }
+    if(tier==='medium'){ var sc=pick(TERM_SCENARIOS); return {kind:'sc-'+sc.name, files:[{name:sc.name,perms:permFromOct(sc.start)}], targetName:sc.name, targetOct:sc.target, startOct:sc.start, text:sc.text}; }
     var name=pick(TERM_NAMES), so=pick(EASY), to; do{to=pick(EASY);}while(to===so);
     return {kind:name+'-'+to, files:[{name:name,perms:permFromOct(so)}], targetName:name, targetOct:to, startOct:so};
   }
@@ -1110,21 +1120,19 @@
     do{ task=genTermTask(tier); tries++; }while(termRecent.indexOf(taskSig(task))>-1 && tries<30);
     termRecent.push(taskSig(task)); if(termRecent.length>3) termRecent.shift();
     TASK=task;
-    if(tier==='expert'||tier==='realistic'){
-      goal.innerHTML='<span class="goalk">task</span> '+TASK.text;
-    } else {
+    if(tier==='easy'){
       var to=TASK.targetOct, name=TASK.targetName;
-      if(tier==='medium') goal.innerHTML='<span class="goalk">goal</span> set <b>'+name+'</b> to <span class="mono">'+symFull(permFromOct(to),isColor())+'</span>';
-      else goal.innerHTML='<span class="goalk">goal</span> set <b>'+name+'</b> to <span class="mono">'+symFull(permFromOct(to),isColor())+'</span> &nbsp;(<b>'+to+'</b>)';
+      goal.innerHTML='<span class="goalk">goal</span> set <b>'+name+'</b> to <span class="mono">'+symFull(permFromOct(to),isColor())+'</span> &nbsp;(<b>'+to+'</b>)';
+    } else {
+      goal.innerHTML='<span class="goalk">task</span> '+TASK.text;
     }
-    termErr=0; termDone=false;
+    termErr=0; termDone=false; termCmds=0;
     var out=document.getElementById('termOut'); out.innerHTML='';
     var intro = tier==='expert' ? "# new task. run 'ls -l' to inspect the directory, find the right file, then fix it."
-              : tier==='realistic' ? "# new task. run 'ls -l' to see the file, then type the chmod command that does it."
-              : tier==='medium' ? "# new goal. the target number is hidden \u2014 work out the mode, or use symbolic chmod."
+              : tier==='medium' ? "# new task. run 'ls -l' to see the file, then type the chmod command that does it."
               : "# new goal. chmod the file to the target above ('help' for examples).";
     termPrint(intro,'tip');
-    if(tier==='easy'||tier==='medium'){ termPrint(PS1+' ls -l'); TASK.files.forEach(function(f){termPrint(fileLine(f));}); }
+    if(tier==='easy'){ termPrint(PS1+' ls -l'); TASK.files.forEach(function(f){termPrint(fileLine(f));}); }
     updateTermCount();
   }
   function termHintFn(){
@@ -1140,7 +1148,7 @@
     document.getElementById('termInput').focus();
   }
   function initTerminal(){
-    termSolved = ST.term||0; curTier = ST.termTier||'easy';
+    termSolved = ST.term||0; curTier = ST.termTier||'easy'; if(curTier==='realistic')curTier='medium'; if(['easy','medium','expert'].indexOf(curTier)<0)curTier='easy';
     var inp=document.getElementById('termInput'); if(!inp)return;
     inp.addEventListener('keydown',function(e){
       if(e.key==='Enter'){
