@@ -240,13 +240,13 @@
   .dxexp .dh{font-weight:700; margin-bottom:5px}
   .dxexp .tot{font-weight:700; color:var(--green)}
   .dxctrl{display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap}
-  .termtask{font-size:14px; color:var(--text); margin:0 0 12px; line-height:1.6}
+  .termtask{font-size:14px; color:var(--text); margin:0 0 18px; line-height:1.6}
   .termtask b{color:var(--green); font-weight:500}
   .goalk{display:inline-block; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); border:1px solid var(--border); border-radius:4px; padding:1px 6px; margin-right:8px; vertical-align:middle}
   .termwin{border:1px solid var(--border-hi); border-radius:8px; overflow:hidden; background:var(--bg)}
   .termbar{display:flex; align-items:center; gap:7px; padding:8px 12px; background:var(--panel2); border-bottom:1px solid var(--border)}
   .termtitle{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--dim)}
-  .tierpick{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px}
+  .tierpick{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px}
   .tierchip{font-family:var(--mono); font-size:11px; letter-spacing:1px; padding:5px 11px; border-radius:6px; cursor:pointer; background:var(--panel2); color:var(--muted); border:1px solid var(--border); transition:all .12s}
   .tierchip:hover{border-color:var(--border-hi); color:var(--text)}
   .tierchip.on{background:transparent; color:currentColor; font-weight:700}
@@ -261,6 +261,9 @@
   .termline.err{color:var(--red)}
   .termline.ok{color:var(--green); margin-top:14px; padding-top:12px; border-top:1px dashed var(--border)}
   .termline.go{color:var(--muted); margin-bottom:4px}
+  .tmark{font-weight:700; margin-left:8px}
+  .tmark.ok{color:var(--green)}
+  .tmark.err{color:var(--red)}
   .ps1u{color:var(--green); font-weight:700}
   .ps1p{color:var(--muted)}
   .termin{display:flex; align-items:center; gap:8px; padding:9px 14px; border-top:1px solid var(--border); background:var(--panel2)}
@@ -489,9 +492,8 @@
 
       <div class="tab-panel" data-panel="terminal">
         <div class="panel">
-          <p class="legend" style="margin:0 0 12px">a sandbox shell &mdash; fix each file's permissions with real <span class="mono">chmod</span> commands. it gets harder as you go: first the number is shown, then hidden, then you get a plain-English task.</p>
-          <p class="termtask" id="termGoal"></p>
           <div class="tierpick" id="tierPick"></div>
+          <p class="termtask" id="termGoal"></p>
           <div class="termwin">
             <div class="termbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="termtitle">user@chmodzilla: ~</span></div>
             <div class="term" id="termOut"></div>
@@ -1017,7 +1019,8 @@
     var cl=Object.keys(sig).map(function(key){var who=sig[key]==='ugo'?'a':sig[key]; return who+key;});
     return cl.join(',');
   }
-  function termPrint(html,cls){var t=document.getElementById('termOut'); if(!t)return; var d=document.createElement('div'); d.className='termline'+(cls?' '+cls:''); d.innerHTML=html; t.appendChild(d); t.scrollTop=t.scrollHeight;}
+  function termPrint(html,cls){var t=document.getElementById('termOut'); if(!t)return null; var d=document.createElement('div'); d.className='termline'+(cls?' '+cls:''); d.innerHTML=html; t.appendChild(d); t.scrollTop=t.scrollHeight; return d;}
+  function mark(el,type){ if(!el)return; var s=document.createElement('span'); s.className='tmark '+type; s.textContent= type==='ok'?'\u2713':'\u2717'; el.appendChild(s); }
   function updateTermCount(){var c=document.getElementById('termCount'); if(c)c.textContent='files fixed: '+termSolved;}
   function termDiff(){var f=targetFile(), tgt=permFromOct(TASK.targetOct), out=[],L={u:'owner',g:'group',o:'others'}; if(!f)return out; ['u','g','o'].forEach(function(k){['r','w','x'].forEach(function(b){if(f.perms[k][b]!==tgt[k][b])out.push(L[k]+' '+(tgt[k][b]?'+':'-')+b);});}); return out;}
   function checkWin(usedMode, oneShot){
@@ -1045,7 +1048,7 @@
     return false;
   }
   function termRun(line){
-    termPrint(PS1+' '+esc(line));
+    var echo=termPrint(PS1+' '+esc(line));
     var t=line.trim();
     if(t==='') return;
     termHist.push(t); termHi=termHist.length;
@@ -1060,16 +1063,23 @@
     var parts=t.split(/\s+/);
     var cmd=parts[0].toLowerCase();
     if(cmd!=='chmod'){termPrint(esc(parts[0])+': command not found','err'); termErr++; return;}
-    if(parts.length<2){termPrint('chmod: missing operand','err'); termErr++; return;}
-    if(parts.length<3){termPrint("chmod: missing operand after '"+esc(parts[1])+"'",'err'); termErr++; return;}
-    if(parts.length>3){termPrint('chmod: too many operands (this trainer changes one file at a time)','err'); termErr++; return;}
+    if(parts.length<2){termPrint('chmod: missing operand','err'); mark(echo,'err'); termErr++; return;}
+    if(parts.length<3){termPrint("chmod: missing operand after '"+esc(parts[1])+"'",'err'); mark(echo,'err'); termErr++; return;}
+    if(parts.length>3){termPrint('chmod: too many operands (this trainer changes one file at a time)','err'); mark(echo,'err'); termErr++; return;}
     var f=findFile(parts[2]);
-    if(!f){termPrint("chmod: cannot access '"+esc(parts[2])+"': No such file or directory",'err'); termErr++; return;}
+    if(!f){termPrint("chmod: cannot access '"+esc(parts[2])+"': No such file or directory",'err'); mark(echo,'err'); termErr++; return;}
     var copy=clonePerms(f.perms), res=applyChmod(copy, parts[1].toLowerCase());
-    if(!res.ok){termPrint(esc(res.err),'err'); termErr++; return;}
-    f.perms=copy; termCmds++;
-    termPrint(fileLine(f));
-    if(!checkWin(parts[1].toLowerCase(), termCmds===1) && f.name===TASK.targetName){ termPrint("# not there yet \u2014 keep going (tap 'hint' if you're stuck).",'tip'); }
+    if(!res.ok){termPrint(esc(res.err),'err'); mark(echo,'err'); termErr++; return;}
+    var wins = (f.name===TASK.targetName) && (octStr(copy)===TASK.targetOct);
+    if(wins){
+      f.perms=copy; termCmds++;
+      termPrint(fileLine(f));
+      mark(echo,'ok');
+      checkWin(parts[1].toLowerCase(), termCmds===1);
+    } else {
+      termErr++; mark(echo,'err');
+      termPrint("# that doesn't reach the goal \u2014 nothing was changed. try again (tap 'hint' if you're stuck).",'tip');
+    }
   }
   var EX_FILES=['notes.txt','data.csv','index.html','report.txt','README.md','app.log','styles.css','todo.md','cache.dat','archive.zip'];
   var EX_DIRS=['logs','backups','src','config','public','assets','docs','tmp','vendor','uploads'];
@@ -1129,10 +1139,10 @@
     termErr=0; termDone=false; termCmds=0;
     var out=document.getElementById('termOut'); out.innerHTML='';
     var intro = tier==='expert' ? "# new task. run 'ls -l' to inspect the directory, find the right file, then fix it."
-              : tier==='medium' ? "# new task. run 'ls -l' to see the file, then type the chmod command that does it."
+              : tier==='medium' ? "# new task. read it, then type the chmod command that does it."
               : "# new goal. chmod the file to the target above ('help' for examples).";
     termPrint(intro,'tip');
-    if(tier==='easy'){ termPrint(PS1+' ls -l'); TASK.files.forEach(function(f){termPrint(fileLine(f));}); }
+    if(tier==='easy'||tier==='medium'){ termPrint(PS1+' ls -l'); TASK.files.forEach(function(f){termPrint(fileLine(f));}); }
     updateTermCount();
   }
   function termHintFn(){
