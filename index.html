@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>zer0chmod</title>
+<title>chmodzilla</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
@@ -68,7 +68,7 @@
   @media (max-width:460px){.themebtn{margin-left:auto}}
   .body{padding:26px 24px 28px}
 
-  h1{font-family:var(--crt); font-size:54px; line-height:.9; margin:0 0 2px;
+  h1{font-family:var(--crt); font-size:54px; line-height:.9; margin:0 0 22px;
      color:var(--green); text-shadow:0 0 18px rgba(39,255,158,.45); letter-spacing:1px}
   h1 .cur{display:inline-block; width:18px; background:var(--green); margin-left:4px;
      box-shadow:0 0 14px rgba(39,255,158,.6); animation:blink 1.1s steps(1) infinite}
@@ -77,12 +77,16 @@
   .sub b{color:var(--cyan); font-weight:500}
   .zero{color:var(--red); text-shadow:0 0 16px rgba(255,107,94,.55)}
   .tagline{font-family:var(--mono); font-size:13px; color:var(--red); margin:0 0 22px; letter-spacing:1px}
+  .byline{font-family:var(--mono); font-size:12px; color:var(--red); opacity:.85; letter-spacing:.5px; margin-left:10px; white-space:nowrap}
+  @media (max-width:460px){.byline{display:none}}
 
-  .tabs{display:flex; gap:2px; margin:0 0 22px; border-bottom:1px solid var(--border)}
-  .tab{font-family:var(--mono); font-size:14px; padding:10px 18px; cursor:pointer; background:transparent;
-       color:var(--muted); border:0; border-bottom:2px solid transparent; margin-bottom:-1px; transition:.15s}
+  .tabs{display:inline-flex; gap:4px; margin:0 0 22px; padding:4px; background:var(--panel2);
+        border:1px solid var(--border); border-radius:11px; max-width:100%; overflow-x:auto; scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{font-family:var(--mono); font-size:13.5px; padding:8px 17px; cursor:pointer; background:transparent;
+       color:var(--muted); border:0; border-radius:8px; white-space:nowrap; transition:color .15s, background .15s}
   .tab:hover{color:var(--text)}
-  .tab.active{color:var(--green); border-bottom-color:var(--green)}
+  .tab.active{color:var(--green); background:var(--panel); box-shadow:inset 0 0 0 1px var(--border-hi), 0 1px 2px rgba(0,0,0,.25)}
   .tab-panel{display:none}
   .tab-panel.active{display:block; animation:rise .4s ease}
   @keyframes rise{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
@@ -273,9 +277,8 @@
     body{padding:14px 8px 48px}
     .body{padding:20px 14px 22px}
     h1{font-size:44px}
-    .tabs{gap:0; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none}
-    .tabs::-webkit-scrollbar{display:none}
-    .tab{padding:9px 13px; font-size:13px; white-space:nowrap}
+    .tabs{gap:3px; padding:3px; -webkit-overflow-scrolling:touch}
+    .tab{padding:8px 12px; font-size:12.5px}
     .stats{gap:6px}
     .stat{padding:9px 4px}
     .stat .v{font-size:24px}
@@ -345,13 +348,13 @@
   <div class="win">
     <div class="titlebar">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="path">~/learn/zer0chmod</span>
+      <span class="path">~/learn/chmodzilla</span>
+      <span class="byline">by Zer0red</span>
       <span class="winlabel">Linux Permissions</span>
       <button class="themebtn" id="themeBtn" type="button" aria-label="Toggle light mode"></button>
     </div>
     <div class="body">
       <h1>chmod<span class="cur">&nbsp;</span></h1>
-      <p class="tagline">by Zer0red</p>
 
       <div class="tabs" id="tabs">
         <button class="tab active" data-tab="learn">learn</button>
@@ -492,9 +495,9 @@
           <p class="termtask" id="termGoal"></p>
           <div class="tierpick" id="tierPick"></div>
           <div class="termwin">
-            <div class="termbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="termtitle">user@linux: ~</span><span class="termlevel" id="termLevel"></span></div>
+            <div class="termbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="termtitle">user@chmodzilla: ~</span><span class="termlevel" id="termLevel"></span></div>
             <div class="term" id="termOut"></div>
-            <div class="termin"><span class="ps1u">user@linux</span><span class="ps1p">:~$</span><input id="termInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="type a command&hellip;"></div>
+            <div class="termin"><span class="ps1u">user@chmodzilla</span><span class="ps1p">:~$</span><input id="termInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="type a command&hellip;"></div>
           </div>
           <div class="termctrl">
             <button class="ghost" id="termHint">hint</button>
@@ -926,19 +929,15 @@
           : '\u2713 <b>level '+(cleared+1)+'</b> cleared! ('+stages[cleared].goal+'/'+stages[cleared].goal+')';
         box.appendChild(msg);
         var row=document.createElement('div'); row.className='clearbtns';
-        var primary, secondary;
+        var secondary=mkBtn('ghost','keep practicing'); secondary.addEventListener('click',function(){newQ();});
+        var primary;
         if(lastFinite){
-          primary=mkBtn('act','open the terminal \u203a'); primary.addEventListener('click',function(){cleanup(); switchTab('terminal');});
-          secondary=mkBtn('ghost','keep practicing'); secondary.addEventListener('click',function(){cleanup(); newQ();});
+          primary=mkBtn('act','open the terminal \u203a'); primary.addEventListener('click',function(){switchTab('terminal');});
         } else {
-          primary=mkBtn('act','go to level '+(cleared+2)+' \u203a'); primary.addEventListener('click',function(){cleanup(); setStage(cleared+1);});
-          secondary=mkBtn('ghost','keep practicing'); secondary.addEventListener('click',function(){cleanup(); newQ();});
+          primary=mkBtn('act','go to level '+(cleared+2)+' \u203a'); primary.addEventListener('click',function(){setStage(cleared+1);});
         }
         row.appendChild(primary); row.appendChild(secondary); box.appendChild(row);
-        ctrls.appendChild(box); primary.focus();
-        function key(e){ if(e.key==='Enter'){ primary.click(); } }
-        function cleanup(){ document.removeEventListener('keydown',key); }
-        document.addEventListener('keydown',key);
+        ctrls.appendChild(box); secondary.focus();
         return;
       }
       var n=mkBtn('act','next \u203a'); ctrls.appendChild(n); n.focus();
@@ -968,7 +967,7 @@
 
   /* ---------- CLI terminal simulator ---------- */
   var TASK=null, termErr=0, termDone=false, termHist=[], termHi=0, termSolved=0, curTier='easy';
-  var PS1='<span class="ps1u">user@linux</span><span class="ps1p">:~$</span>';
+  var PS1='<span class="ps1u">user@chmodzilla</span><span class="ps1p">:~$</span>';
   var LSDATE='Jun  5 12:04';
   var TERM_NAMES=['config.php','notes.txt','backup.sh','deploy.sh','secret.key','index.html','data.csv','run.sh'];
   var TERM_SCENARIOS=[
