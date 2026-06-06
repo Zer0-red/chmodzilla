@@ -134,19 +134,24 @@
   .crow .ds b{color:var(--text); font-weight:500}
   @media (max-width:560px){.crow{grid-template-columns:50px 1fr; row-gap:4px}.crow .ds{grid-column:1 / -1}}
 
-  .levels{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin:0 0 18px}
-  .level{font-family:var(--mono); text-align:left; cursor:pointer; display:grid; gap:2px; padding:11px 13px;
-         background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:8px; transition:.15s}
-  .level:hover{border-color:var(--border-hi)}
-  .level .lbadge{font-family:var(--crt); font-size:22px; line-height:1; color:var(--muted)}
-  .level .lname{font-size:14px; font-weight:500}
-  .level .ldesc{font-size:11.5px; color:var(--muted); line-height:1.4}
-  .level .lstat{font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--dim); margin-top:3px}
+  .levels{display:grid; grid-template-columns:repeat(auto-fit,minmax(156px,1fr)); gap:9px; margin:0 0 18px}
+  .level{font-family:var(--mono); text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:5px; padding:12px 13px 13px;
+         background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:10px; transition:border-color .15s, transform .15s, background .15s}
+  .level:hover{border-color:var(--border-hi); transform:translateY(-1px)}
+  .ltop{display:flex; align-items:center; justify-content:space-between; gap:6px}
+  .level .lnum{font-size:10px; letter-spacing:1.5px; font-weight:700; color:var(--muted)}
+  .level .lflag{font-family:var(--crt); font-size:13px; line-height:1; color:var(--dim)}
+  .level .lname{font-size:14.5px; font-weight:600; line-height:1.15}
+  .level .ldesc{font-size:11.5px; color:var(--muted); line-height:1.35; flex:1}
+  .level .lprog{display:flex; align-items:center; gap:8px; margin-top:3px}
+  .level .lbar{flex:1; height:6px; border-radius:3px; background:var(--panel2); border:1px solid var(--border); overflow:hidden}
+  .level .lbarfill{display:block; height:100%; background:var(--green); border-radius:3px; transition:width .3s ease}
+  .level .lcount{font-size:11px; font-weight:600; color:var(--muted); min-width:30px; text-align:right}
+  .level .lmeta{font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--dim); margin-top:3px}
   .level.cur{border-color:var(--green); background:rgba(39,255,158,.08)}
-  .level.cur .lbadge,.level.cur .lstat{color:var(--green)}
-  .level.done .lbadge{color:var(--green)}
-  .level.lock{cursor:not-allowed; opacity:.45; border-style:dashed}
-  .level.lock:hover{border-color:var(--border)}
+  .level.cur .lnum,.level.cur .lflag,.level.done .lnum,.level.done .lflag{color:var(--green)}
+  .level.lock{cursor:not-allowed; opacity:.5; border-style:dashed}
+  .level.lock:hover{border-color:var(--border); transform:none}
 
   .banner{margin:0 0 16px; padding:11px 14px; border:1px solid var(--green); border-radius:6px;
           background:rgba(39,255,158,.08); color:var(--green); font-size:14px}
@@ -189,9 +194,13 @@
     color:var(--text); border:1px solid var(--border); border-radius:6px; padding:11px 14px; transition:.15s}
   .choice:hover{border-color:var(--green); color:var(--green)}
   .choice.bad{opacity:.45; text-decoration:line-through; cursor:not-allowed; border-color:var(--red); color:var(--red)}
-  .ref{font-size:12px; color:var(--muted); line-height:1.95; background:var(--panel); border:1px solid var(--border);
-    border-left:2px solid var(--cyan); border-radius:6px; padding:10px 13px; margin:2px 0 16px}
-  .ref b{color:var(--cyan); font-weight:500}
+  .ref{font-size:12px; color:var(--muted); line-height:1.5; background:var(--panel); border:1px solid var(--border);
+    border-left:2px solid var(--cyan); border-radius:6px; padding:11px 13px; margin:2px 0 16px}
+  .refex{font-family:var(--mono); font-size:17px; color:var(--text); font-weight:700; letter-spacing:1px; margin-bottom:6px}
+  .refnote{font-size:11.5px; color:var(--dim); margin-bottom:11px}
+  .reftbl{display:flex; flex-direction:column; gap:5px; font-size:12px}
+  .reftbl .rk{display:inline-block; min-width:48px; font-weight:700; text-transform:uppercase; font-size:10px; letter-spacing:1px}
+  .ref .rw{color:var(--green); font-weight:700} .ref .ro{color:var(--amber); font-weight:700} .ref .rp{color:var(--cyan); font-weight:700}
 
   .decex{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px}
   .declabel{font-size:12px; color:var(--muted); margin:16px 0 9px; letter-spacing:.3px}
@@ -278,7 +287,14 @@
   }
 
   .formula{font-family:var(--mono); font-size:12.5px; color:var(--muted); background:var(--panel);
-    border:1px solid var(--border); border-radius:6px; padding:9px 12px; margin:0 0 18px; text-align:center}
+    border:1px solid var(--border); border-radius:6px; padding:9px 12px; margin:8px 0 0; text-align:center}
+  .cheat{margin:0 0 18px}
+  .cheat summary{list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; letter-spacing:.5px; color:var(--dim); padding:4px 10px; border:1px solid var(--border); border-radius:6px; transition:color .15s, border-color .15s; user-select:none}
+  .cheat summary:hover{color:var(--muted); border-color:var(--border-hi)}
+  .cheat summary::-webkit-details-marker{display:none}
+  .cheat summary::before{content:"▸"; font-size:9px; color:var(--dim)}
+  .cheat[open] summary::before{content:"▾"}
+  .cheat[open] summary{color:var(--muted)}
   .formula-card{font-family:var(--mono); font-size:15px; color:var(--text); line-height:1.85;
     background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px 16px}
   .formula-card b{color:var(--green); font-weight:700}
@@ -429,15 +445,18 @@
 
       <div class="tab-panel" data-panel="test">
         <div class="panel">
-          <div class="formula">r = 4 &nbsp;&middot;&nbsp; w = 2 &nbsp;&middot;&nbsp; x = 1 &nbsp;&nbsp;&rarr;&nbsp;&nbsp; rwx = 7 &nbsp;&middot;&nbsp; rw- = 6 &nbsp;&middot;&nbsp; r-x = 5 &nbsp;&middot;&nbsp; r-- = 4</div>
           <div class="levels" id="rail"></div>
           <div id="banner"></div>
           <div class="stats">
             <div class="stat"><div class="v" id="sScore">0</div><div class="k">solved</div></div>
             <div class="stat"><div class="v" id="sStreak">0</div><div class="k">streak</div></div>
             <div class="stat"><div class="v" id="sBest">0</div><div class="k">best</div></div>
-            <div class="stat"><div class="v" id="sFirst">--</div><div class="k">first try</div></div>
+            <div class="stat"><div class="v" id="sComplete">0%</div><div class="k">completion</div></div>
           </div>
+          <details class="cheat">
+            <summary>show cheat sheet</summary>
+            <div class="formula">r = 4 &nbsp;&middot;&nbsp; w = 2 &nbsp;&middot;&nbsp; x = 1 &nbsp;&nbsp;&rarr;&nbsp;&nbsp; rwx = 7 &nbsp;&middot;&nbsp; rw- = 6 &nbsp;&middot;&nbsp; r-x = 5 &nbsp;&middot;&nbsp; r-- = 4</div>
+          </details>
           <div class="bar" id="bar"></div>
           <div id="quiz"></div>
         </div>
@@ -626,16 +645,18 @@
   }
 
   /* ---------- state ---------- */
-  var ST={solved:0,best:0,first:0,total:0,unlocked:1,term:0,termTier:'easy'};
-  try{var s=JSON.parse(localStorage.getItem('chmodTrainer')); if(s){ST.solved=s.solved||0;ST.best=s.best||0;ST.first=s.first||0;ST.total=s.total||0;ST.unlocked=s.unlocked||1;ST.term=s.term||0;ST.termTier=s.termTier||'easy';}}catch(e){}
+  var ST={solved:0,best:0,first:0,total:0,unlocked:1,term:0,termTier:'easy',stageProg:[]};
+  try{var s=JSON.parse(localStorage.getItem('chmodTrainer')); if(s){ST.solved=s.solved||0;ST.best=s.best||0;ST.first=s.first||0;ST.total=s.total||0;ST.unlocked=s.unlocked||1;ST.term=s.term||0;ST.termTier=s.termTier||'easy'; if(Array.isArray(s.stageProg))ST.stageProg=s.stageProg.slice();}}catch(e){}
   function save(){try{localStorage.setItem('chmodTrainer',JSON.stringify(ST));}catch(e){}}
-  var streak=0, cur=0, stageCorrect=0;
+  var streak=0, cur=0;
 
   function stats(){
     document.getElementById('sScore').textContent=ST.solved;
     document.getElementById('sStreak').textContent=streak;
     document.getElementById('sBest').textContent=ST.best;
-    document.getElementById('sFirst').textContent=ST.total?Math.round(ST.first/ST.total*100)+'%':'--';
+    var need=0, have=0;
+    for(var i=0;i<stages.length;i++){ if(stages[i].goal!==Infinity){ need+=stages[i].goal; have+=Math.min(ST.stageProg[i]||0, stages[i].goal); } }
+    document.getElementById('sComplete').textContent=(need?Math.round(have/need*100):0)+'%';
   }
 
   /* ---------- generators ---------- */
@@ -680,10 +701,14 @@
   var CLASSES=[['u','the owner'],['g','the group'],['o','others'],['a','everyone']];
   var OPS=[['+','add'],['-','remove'],['=','set exactly']];
   var PERMS=[['r','read'],['w','write'],['x','execute']];
-  var SYMREF='<div class="ref"><b>chmod &lt;who&gt;&lt;op&gt;&lt;perm&gt; file</b> &mdash; e.g. <b>chmod g+x file</b><br>'+
-    'who:&nbsp;&nbsp; u = owner &nbsp;\u00b7&nbsp; g = group &nbsp;\u00b7&nbsp; o = others &nbsp;\u00b7&nbsp; a = all<br>'+
-    'op:&nbsp;&nbsp;&nbsp;&nbsp; + add &nbsp;\u00b7&nbsp; - remove &nbsp;\u00b7&nbsp; = set exactly<br>'+
-    'perm:&nbsp; r = read &nbsp;\u00b7&nbsp; w = write &nbsp;\u00b7&nbsp; x = execute</div>';
+  var SYMREF='<div class="ref">'+
+    '<div class="refex">chmod <span class="rw">g</span><span class="ro">+</span><span class="rp">x</span> file</div>'+
+    '<div class="refnote">read the middle part as three pieces: <span class="rw">who</span> to change &middot; <span class="ro">how</span> to change it &middot; <span class="rp">which</span> permission.</div>'+
+    '<div class="reftbl">'+
+      '<div><span class="rk rw">who</span> <b class="rw">u</b> owner &middot; <b class="rw">g</b> group &middot; <b class="rw">o</b> others &middot; <b class="rw">a</b> all</div>'+
+      '<div><span class="rk ro">how</span> <b class="ro">+</b> add &middot; <b class="ro">-</b> remove &middot; <b class="ro">=</b> set exactly</div>'+
+      '<div><span class="rk rp">perm</span> <b class="rp">r</b> read &middot; <b class="rp">w</b> write &middot; <b class="rp">x</b> execute</div>'+
+    '</div></div>';
   function symMeaning(C,O,P){return O[1]+' the '+P[1]+' permission for '+C[1];}
 
   function genSymWrite(diff){
@@ -762,48 +787,54 @@
   function genMix(){return pick([genTriad,genRead,genBuild,genNum,genSym,genScenario])(1);}
 
   var stages=[
-    {num:'1', name:'one group', desc:'read a single rwx group', goal:6, gen:genTriad},
-    {num:'2', name:'read full', desc:'full permission \u2192 octal', goal:6, gen:genRead},
-    {num:'3', name:'build', desc:'octal \u2192 toggle the bits', goal:6, gen:genBuild},
-    {num:'4', name:'chmod #', desc:'numeric chmod command', goal:6, gen:genNum},
-    {num:'5', name:'chmod sym', desc:'symbolic chmod (u+x)', goal:6, gen:genSym},
-    {num:'6', name:'scenarios', desc:'real-world situations', goal:6, gen:genScenario},
+    {num:'1', name:'one group', desc:'read a single rwx group', goal:10, gen:genTriad},
+    {num:'2', name:'read full', desc:'full permission \u2192 octal', goal:10, gen:genRead},
+    {num:'3', name:'build', desc:'octal \u2192 toggle the bits', goal:10, gen:genBuild},
+    {num:'4', name:'numeric', desc:'numeric chmod command', goal:10, gen:genNum},
+    {num:'5', name:'symbolic', desc:'symbolic chmod (u+x)', goal:10, gen:genSym},
+    {num:'6', name:'scenarios', desc:'real-world situations', goal:10, gen:genScenario},
     {num:'\u221e', name:'mixed', desc:'everything, endless', goal:Infinity, gen:genMix}
   ];
+  for(var _si=0; _si<stages.length; _si++){ if(typeof ST.stageProg[_si]!=='number') ST.stageProg[_si]=0; }
 
   /* ---------- rail / progress ---------- */
   function renderRail(){
     var r=document.getElementById('rail'); r.innerHTML='';
     for(var i=0;i<stages.length;i++){
       var st=stages[i], locked=i>=ST.unlocked, done=i<ST.unlocked-1, current=(i===cur);
-      var badge = done ? '\u2713' : st.num;
-      var stat = locked ? 'locked'
-        : current ? (st.goal===Infinity ? 'in progress' : 'progress '+Math.min(stageCorrect,st.goal)+'/'+st.goal)
-        : done ? 'cleared' : 'open';
+      var prog=Math.min(ST.stageProg[i]||0, st.goal);
+      var label = st.num==='\u221e' ? 'MIXED' : 'LEVEL '+st.num;
+      var flag = done ? '\u2713' : current ? 'now' : '';
+      var body;
+      if(locked) body='<div class="lmeta">\uD83D\uDD12 locked</div>';
+      else if(st.goal===Infinity) body='<div class="lmeta">endless practice</div>';
+      else { var pct=Math.round(prog/st.goal*100); body='<div class="lprog"><span class="lbar"><span class="lbarfill" style="width:'+pct+'%"></span></span><span class="lcount">'+prog+'/'+st.goal+'</span></div>'; }
       var b=document.createElement('button');
       b.className='level'+(current?' cur':'')+(done?' done':'')+(locked?' lock':'');
-      b.innerHTML='<span class="lbadge">'+badge+'</span><span class="lname">'+st.name+'</span><span class="ldesc">'+st.desc+'</span><span class="lstat">'+stat+'</span>';
+      b.innerHTML='<div class="ltop"><span class="lnum">'+label+'</span><span class="lflag">'+flag+'</span></div>'+
+                  '<span class="lname">'+st.name+'</span>'+
+                  '<span class="ldesc">'+st.desc+'</span>'+body;
       if(!locked){(function(idx){b.addEventListener('click',function(){setStage(idx);});})(i);}
       r.appendChild(b);
     }
   }
   function renderBar(){
-    var g=stages[cur].goal, bar=document.getElementById('bar');
+    var g=stages[cur].goal, bar=document.getElementById('bar'), prog=ST.stageProg[cur]||0;
     if(g===Infinity){bar.innerHTML='<span>endless mixed practice &mdash; everything in the rotation</span>';return;}
-    var html=''; for(var i=0;i<g;i++) html+='<span class="seg'+(i<stageCorrect?' f':'')+'"></span>';
-    html+='<span style="margin-left:10px">'+Math.min(stageCorrect,g)+' / '+g+' to unlock next</span>';
+    var html=''; for(var i=0;i<g;i++) html+='<span class="seg'+(i<prog?' f':'')+'"></span>';
+    html+='<span style="margin-left:10px">'+Math.min(prog,g)+' / '+g+' to unlock next</span>';
     bar.innerHTML=html;
   }
   function banner(msg){document.getElementById('banner').innerHTML=msg?'<div class="banner">'+msg+'</div>':'';}
-  function setStage(i){if(i>=ST.unlocked)return; cur=i; stageCorrect=0; recent=[]; banner(''); renderRail(); renderBar(); newQ();}
+  function setStage(i){if(i>=ST.unlocked)return; cur=i; recent=[]; banner(''); renderRail(); renderBar(); newQ();}
 
   function recordSolve(clean){
     ST.solved++; ST.total++; streak++; if(streak>ST.best)ST.best=streak; if(clean)ST.first++;
-    stageCorrect++;
-    if(stages[cur].goal!==Infinity && stageCorrect>=stages[cur].goal && cur+1<stages.length && ST.unlocked<cur+2){
-      ST.unlocked=cur+2; banner('stage cleared &mdash; "'+stages[cur+1].name+'" unlocked. keep going here or jump ahead.'); renderRail();
+    ST.stageProg[cur]=(ST.stageProg[cur]||0)+1;
+    if(stages[cur].goal!==Infinity && ST.stageProg[cur]>=stages[cur].goal && cur+1<stages.length && ST.unlocked<cur+2){
+      ST.unlocked=cur+2; banner('stage cleared &mdash; "'+stages[cur+1].name+'" unlocked. keep going here or jump ahead.');
     }
-    save(); stats(); renderBar();
+    save(); stats(); renderBar(); renderRail();
   }
   function recordReveal(){ST.total++; streak=0; save(); stats();}
 
@@ -878,12 +909,12 @@
     if(inp){ inp.addEventListener('keydown',function(e){if(e.key==='Enter')doCheck();}); inp.focus(); }
   }
 
-  function difficulty(){ if(stages[cur].goal===Infinity)return 1; return stageCorrect>=Math.ceil(stages[cur].goal/2)?1:0; }
+  function difficulty(){ if(stages[cur].goal===Infinity)return 1; return (ST.stageProg[cur]||0)>=Math.ceil(stages[cur].goal/2)?1:0; }
   var recent=[];
   function newQ(){
     var q, tries=0;
-    do{ q=stages[cur].gen(difficulty()); tries++; }while(recent.indexOf(q.key)>-1 && tries<25);
-    recent.push(q.key); if(recent.length>3) recent.shift();
+    do{ q=stages[cur].gen(difficulty()); tries++; }while(recent.indexOf(q.key)>-1 && tries<40);
+    recent.push(q.key); if(recent.length>6) recent.shift();
     ask(q);
   }
 
@@ -1100,7 +1131,7 @@
 
   function resetAll(){
     if(!confirm('Reset all progress? This clears your solved count, streaks, unlocked stages, and the terminal.'))return;
-    ST={solved:0,best:0,first:0,total:0,unlocked:1,term:0,termTier:'easy'}; streak=0; cur=0; stageCorrect=0; recent=[]; termSolved=0; termHist=[]; termHi=0; curTier='easy'; termRecent=[];
+    ST={solved:0,best:0,first:0,total:0,unlocked:1,term:0,termTier:'easy',stageProg:stages.map(function(){return 0;})}; streak=0; cur=0; recent=[]; termSolved=0; termHist=[]; termHi=0; curTier='easy'; termRecent=[];
     save(); banner(''); renderRail(); renderBar(); stats(); newQ(); renderTierPick(); newTermTask();
   }
   var resetB=document.getElementById('resetBtn');
