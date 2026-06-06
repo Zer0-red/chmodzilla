@@ -832,7 +832,7 @@
     var p=document.createElement('div'); p.innerHTML=q.prompt; quiz.appendChild(p);
     var inp=null, gridState=null;
     if(q.kind==='text'){
-      inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off';
+      inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.autocapitalize='off'; inp.spellcheck=false; inp.setAttribute('autocorrect','off');
       if(q.attrs.maxlength)inp.maxLength=q.attrs.maxlength;
       if(q.attrs.inputmode)inp.inputMode=q.attrs.inputmode;
       inp.placeholder=q.attrs.placeholder||''; quiz.appendChild(inp);
@@ -859,7 +859,7 @@
     revealB.disabled=true;
 
     var attempts=0, hintUsed=false, hintIdx=0, finished=false;
-    function val(){return q.kind==='text'?inp.value:gridState;}
+    function val(){return q.kind==='text'?inp.value.toLowerCase():gridState;}
     function finish(){finished=true; if(inp)inp.disabled=true; checkB.disabled=true; hintB.disabled=true; revealB.disabled=true;}
     function showNext(){
       ctrls.innerHTML=''; var n=mkBtn('act','next \u203a'); ctrls.appendChild(n); n.focus();
@@ -961,21 +961,23 @@
     var t=line.trim();
     if(t==='') return;
     termHist.push(t); termHi=termHist.length;
-    if(t==='clear'){document.getElementById('termOut').innerHTML=''; return;}
-    if(t==='help'){termPrint('try: <span class="mono">ls -l</span> &middot; <span class="mono">chmod 640 file</span> &middot; <span class="mono">chmod u+x file</span> &middot; <span class="mono">chmod g-w file</span> &middot; <span class="mono">chmod o=r file</span> &middot; <span class="mono">whoami</span> &middot; <span class="mono">clear</span>','tip'); return;}
-    if(t==='whoami'){termPrint('user'); return;}
-    if(t==='pwd'){termPrint('/home/user'); return;}
-    if(t==='ls'){termPrint(TASK.files.map(function(f){return f.name;}).join('  ')); return;}
-    if(t==='ls -l'||t==='ls -la'||t==='ll'){TASK.files.forEach(function(f){termPrint(fileLine(f));}); return;}
+    var tl=t.toLowerCase();
+    if(tl==='clear'){document.getElementById('termOut').innerHTML=''; return;}
+    if(tl==='help'){termPrint('try: <span class="mono">ls -l</span> &middot; <span class="mono">chmod 640 file</span> &middot; <span class="mono">chmod u+x file</span> &middot; <span class="mono">chmod g-w file</span> &middot; <span class="mono">chmod o=r file</span> &middot; <span class="mono">whoami</span> &middot; <span class="mono">clear</span>','tip'); return;}
+    if(tl==='whoami'){termPrint('user'); return;}
+    if(tl==='pwd'){termPrint('/home/user'); return;}
+    if(tl==='ls'){termPrint(TASK.files.map(function(f){return f.name;}).join('  ')); return;}
+    if(tl==='ls -l'||tl==='ls -la'||tl==='ll'){TASK.files.forEach(function(f){termPrint(fileLine(f));}); return;}
     if(termDone){return;}
     var parts=t.split(/\s+/);
-    if(parts[0]!=='chmod'){termPrint(esc(parts[0])+': command not found','err'); termErr++; return;}
+    var cmd=parts[0].toLowerCase();
+    if(cmd!=='chmod'){termPrint(esc(parts[0])+': command not found','err'); termErr++; return;}
     if(parts.length<2){termPrint('chmod: missing operand','err'); termErr++; return;}
     if(parts.length<3){termPrint("chmod: missing operand after '"+esc(parts[1])+"'",'err'); termErr++; return;}
     if(parts.length>3){termPrint('chmod: too many operands (this trainer changes one file at a time)','err'); termErr++; return;}
     var f=findFile(parts[2]);
     if(!f){termPrint("chmod: cannot access '"+esc(parts[2])+"': No such file or directory",'err'); termErr++; return;}
-    var copy=clonePerms(f.perms), res=applyChmod(copy, parts[1]);
+    var copy=clonePerms(f.perms), res=applyChmod(copy, parts[1].toLowerCase());
     if(!res.ok){termPrint(esc(res.err),'err'); termErr++; return;}
     f.perms=copy;
     termPrint(fileLine(f));
